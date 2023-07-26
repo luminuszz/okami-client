@@ -9,7 +9,7 @@ import {
   CardFooter,
   Text,
 } from "@chakra-ui/react";
-import React from "react";
+import React, { useEffect } from "react";
 
 import Image from "next/image";
 import { useTheme } from "@emotion/react";
@@ -53,7 +53,7 @@ export function Card({ data }: Props) {
           style={{
             borderRadius: theme.radii.lg,
             width: "100%",
-            height: 200,
+            height: 300,
             objectFit: "cover",
           }}
         />

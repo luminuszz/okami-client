@@ -3,7 +3,7 @@
 import { atom, PrimitiveAtom } from "jotai";
 import { useAtom, useAtomValue } from "jotai/react";
 import { atomFamily } from "jotai/utils";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { okamiService } from "@/services/okami";
 import { cloneDeep } from "lodash";
 
@@ -84,10 +84,18 @@ export const mutationStateSelectorAtom = atom(
   },
 );
 
+interface UseQueryPayloadOutPut<Result> extends Endpoint<Result> {
+  refetch: () => void;
+}
+
 export function useQuerySlice<State>(query: string) {
   const [queryState, updateQuery] = useAtom(querySlice(query));
 
-  useEffect(() => {
+  const executeQuery = useCallback(() => {
+    if (queryState.isLoading) return;
+
+    updateQuery({ isLoading: true });
+
     okamiService
       .get(query)
       .then(({ data }) => updateQuery({ currentData: data }))
@@ -95,7 +103,14 @@ export function useQuerySlice<State>(query: string) {
       .finally(() => updateQuery({ isLoading: false }));
   }, [query, updateQuery]);
 
-  return queryState as Endpoint<State>;
+  useEffect(() => {
+    executeQuery();
+  }, [executeQuery]);
+
+  return {
+    ...queryState,
+    refetch: executeQuery,
+  } as UseQueryPayloadOutPut<State>;
 }
 
 type MutationExec<Payload, Result> = (args: Payload) => Promise<Result>;

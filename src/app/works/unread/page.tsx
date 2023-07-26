@@ -14,6 +14,8 @@ import {
   NumberDecrementStepper,
   NumberInputField,
   useToast,
+  Progress,
+  Box,
 } from "@chakra-ui/react";
 import { Card } from "@/components/Card";
 import { useMutationSlice, useQuerySlice } from "@/store/okami";
@@ -111,7 +113,11 @@ function MarkReadModal() {
 }
 
 export default function Page() {
-  const { currentData = [] } = useQuerySlice<Work[]>(getUnreadWorksQuery);
+  const {
+    currentData = [],
+    refetch,
+    isLoading,
+  } = useQuerySlice<Work[]>(getUnreadWorksQuery);
   const searchFilter = useAtomValue(lowerCaseSearchInputAtom);
 
   const workList = filter(
@@ -126,17 +132,35 @@ export default function Page() {
     ({ title }) => title.toLowerCase().includes(searchFilter),
   );
 
+  useEffect(() => {
+    document.addEventListener("focus", () => {
+      refetch();
+    });
+
+    return () => {
+      document.removeEventListener("focus", () => console.log("remove"));
+    };
+  }, [refetch]);
+
   return (
-    <Container pt="10" maxW="container.xl">
-      <MarkReadModal />
+    <>
+      <Box mt="1">
+        {isLoading && (
+          <Progress w="full" colorScheme="blue" size="xs" isIndeterminate />
+        )}
+      </Box>
 
-      <VStack spacing="5">
-        <SearchInput />
+      <Container pt="10" maxW="container.xl">
+        <MarkReadModal />
 
-        <SimpleGrid columns={3} spacing={10} pb="5">
-          {workList?.map((work) => <Card key={work.id} data={work as any} />)}
-        </SimpleGrid>
-      </VStack>
-    </Container>
+        <VStack spacing="5">
+          <SearchInput />
+
+          <SimpleGrid columns={3} spacing={10} pb="5">
+            {workList?.map((work) => <Card key={work.id} data={work as any} />)}
+          </SimpleGrid>
+        </VStack>
+      </Container>
+    </>
   );
 }
