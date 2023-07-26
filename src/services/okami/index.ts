@@ -5,12 +5,22 @@ export const okamiService = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
 });
 
-export async function getWorksUnread() {
-  const { data } = await okamiService.get<Work[]>(
-    "/works/fetch-for-workers-unread",
-  );
+export const getUnreadWorksQuery = "/work/fetch-for-workers-unread";
 
-  return data;
+interface MarkWorkAsReadPayload {
+  chapter: number;
+  workId: string;
+}
+
+export async function markWorkAsReadCall({
+  workId,
+  chapter,
+}: MarkWorkAsReadPayload) {
+  const response = await okamiService.patch(`/work/${workId}/update-chapater`, {
+    chapter,
+  });
+
+  return response.data;
 }
 
 export * from "./types";

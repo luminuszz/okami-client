@@ -10,9 +10,8 @@ interface WorkLayoutProps {
 
 export default function WorkLayout({ children }: WorkLayoutProps) {
   return (
-    <Box w="100vw" h="full" backgroundColor="blue.900">
+    <Box w="100vw" h="100%">
       {children}
-
       <DevTools />
     </Box>
   );
