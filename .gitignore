@@ -35,3 +35,10 @@ yarn-error.log*
 next-env.d.ts
 
 .idea
+
+
+public/*.png
+public/*.jpg
+public/*.jpeg
+public/*.webp
+
