@@ -1,7 +1,6 @@
 import { atom } from "jotai";
 import { useAtom } from "jotai/react";
-import { useCallback, useEffect } from "react";
-import { func } from "prop-types";
+import { useCallback, useState } from "react";
 import { isEmpty } from "lodash";
 
 export const formStateAtom = atom<Record<string, any>>({});
@@ -32,15 +31,16 @@ export const formManagerAtom = atom(
 );
 
 export function useForm<Values>({ defaultValues }: UseFormArgs<Values>) {
-  const [form, setForm] = useAtom(formManagerAtom);
+  const [form, setForm] = useState(defaultValues);
   const [errors, setErrors] = useAtom(formErrorStateAtom);
   const [formMeta, setFormMeta] = useAtom(formMetaStateAtom);
 
   const setFieldValue = useCallback(
     <Field extends keyof Values>(field: Field, value: Values[Field]) => {
-      setForm({
+      setForm((old) => ({
+        ...old,
         [field]: value,
-      });
+      }));
     },
     [setForm],
   );
@@ -60,10 +60,6 @@ export function useForm<Values>({ defaultValues }: UseFormArgs<Values>) {
     },
     [errors, form, setFormMeta],
   );
-
-  useEffect(() => {
-    setForm(defaultValues);
-  }, [defaultValues, setForm]);
 
   return {
     values: form as Values,

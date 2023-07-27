@@ -3,6 +3,7 @@
 import { useMutationSlice, useQuerySlice } from "@/store/api";
 import {
   getReadWorksQuery,
+  markWorkAsFinishedCall,
   updateWorkCall,
   uploadWorkImageCall,
   Work,
@@ -12,7 +13,6 @@ import {
   Button,
   ButtonGroup,
   Container,
-  Flex,
   FormControl,
   FormLabel,
   Heading,
@@ -20,27 +20,22 @@ import {
   ModalBody,
   ModalFooter,
   ModalHeader,
-  NumberDecrementStepper,
-  NumberIncrementStepper,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
   Progress,
   SimpleGrid,
+  Text,
   useToast,
   VStack,
-  Image,
 } from "@chakra-ui/react";
 import { Card } from "@/components/Card";
 import { filter, map } from "lodash";
-import React, { useEffect } from "react";
+import React from "react";
 import { SearchInput } from "@/components/Search";
-import { useAtom, useAtomValue } from "jotai/react";
+import { useAtomValue } from "jotai/react";
 import { lowerCaseSearchInputAtom } from "@/store/searchInput";
 import { Modal } from "@/components/Modal";
 import { Input } from "@chakra-ui/input";
-import { openEditWorkModalAction, updateModalIsOpen } from "@/store/modal";
-import { useForm } from "@/store/form";
+import { useModal } from "@/store/modal";
+import { useForm } from "react-hook-form";
 import { ImageFileWithPreview } from "@/components/ImageFileWithPreview";
 import { imageFileAtom } from "@/store/imageFileWithPreview";
 
@@ -48,16 +43,93 @@ interface WorkListProps {
   works: Work[];
 }
 
+interface ConfirmModalPayload {
+  id: string;
+  name: string;
+}
+
+function ConfirmFinishWorkModal() {
+  const toast = useToast();
+  const [markWorkAsFinished, { isLoading }] = useMutationSlice(
+    markWorkAsFinishedCall,
+    getReadWorksQuery,
+  );
+
+  const {
+    modal: { isOpen, payload },
+    closeModal,
+  } = useModal<ConfirmModalPayload>("ConfirmFinishWorkModal");
+
+  function handleFinishWork() {
+    if (!payload) return;
+
+    markWorkAsFinished(payload.id)
+      .unwrap()
+      .then(() => {
+        toast({
+          title: "Obra finalizada com sucesso",
+          status: "success",
+        });
+
+        closeModal();
+      })
+      .catch(() => {
+        toast({
+          title: "Erro ao finalizar a obra",
+          status: "error",
+        });
+      });
+  }
+
+  return (
+    <Modal onClose={closeModal} isOpen={isOpen}>
+      <ModalHeader>Finalizar a obra</ModalHeader>
+      <ModalBody>
+        <Text>
+          Deseja mesmo finalizar a obra:{" "}
+          <Text fontWeight="bold">{payload?.name} ?</Text>{" "}
+        </Text>
+      </ModalBody>
+
+      <ModalFooter>
+        <ButtonGroup spacing="3">
+          <Button colorScheme="gray" onClick={closeModal}>
+            Cancelar
+          </Button>
+          <Button
+            colorScheme="yellow"
+            onClick={handleFinishWork}
+            isLoading={isLoading}
+          >
+            Finalizar
+          </Button>
+        </ButtonGroup>
+      </ModalFooter>
+    </Modal>
+  );
+}
+
 function WorksList({ works }: WorkListProps) {
-  const [, updateModal] = useAtom(openEditWorkModalAction);
+  const { openModal: openEditModal } =
+    useModal<EditWorkModalPayload>("EditWorkModal");
+  const { openModal: openConfirmModal } = useModal<ConfirmModalPayload>(
+    "ConfirmFinishWorkModal",
+  );
 
   function handleOpenEditModal(work: Work) {
-    updateModal({
+    openEditModal({
       name: work.name,
       url: work.url,
       chapter: work.chapter,
       id: work.id,
       imageUrl: work.imageUrl,
+    });
+  }
+
+  function handleOpenConfirmModal(id: string, name: string) {
+    openConfirmModal({
+      id,
+      name,
     });
   }
 
@@ -76,13 +148,20 @@ function WorksList({ works }: WorkListProps) {
         >
           <ButtonGroup spacing="2" fontSize={["sm", "md"]} size={["sm", "md"]}>
             <Button
+              variant={work.isFinished ? "ghost" : "solid"}
+              isDisabled={work.isFinished}
+              colorScheme={work.isFinished ? "green" : "yellow"}
+              onClick={() => handleOpenConfirmModal(work.id, work.name)}
+            >
+              {work.isFinished ? "Finalizada" : "Finalizar"}
+            </Button>
+
+            <Button
               colorScheme="linkedin"
               onClick={() => handleOpenEditModal(work)}
             >
               Editar
             </Button>
-
-            <Button colorScheme="yellow">Finalizar obra</Button>
           </ButtonGroup>
         </Card>
       ))}
@@ -90,9 +169,35 @@ function WorksList({ works }: WorkListProps) {
   );
 }
 
+interface EditWorkModalPayload {
+  name: string;
+  id: string;
+  chapter: number;
+  imageUrl: string | null;
+  url: string;
+}
+
 function EditWorkModal() {
-  const modalPayload = useAtomValue(openEditWorkModalAction);
   const toast = useToast();
+  const {
+    modal: { payload, isOpen },
+    closeModal,
+  } = useModal<EditWorkModalPayload>("EditWorkModal");
+
+  const { register, handleSubmit } = useForm<EditWorkModalPayload>({
+    values: {
+      name: payload?.name || "",
+      id: payload?.id || "",
+      imageUrl: payload?.imageUrl || "",
+      chapter: payload?.chapter || 0,
+      url: payload?.url || "",
+    },
+  });
+
+  const [uploadWorkImage, { isLoading: isUploadingImage }] = useMutationSlice(
+    uploadWorkImageCall,
+    getReadWorksQuery,
+  );
 
   const [updateWork, { isLoading }] = useMutationSlice(
     updateWorkCall,
@@ -101,21 +206,10 @@ function EditWorkModal() {
 
   const image = useAtomValue(imageFileAtom);
 
-  const [uploadWorkImage, { isLoading: isUploadingImage }] = useMutationSlice(
-    uploadWorkImageCall,
-    getReadWorksQuery,
-  );
-
-  const [, updateModal] = useAtom(updateModalIsOpen);
-
-  const { errors, values, setFieldValue, formMeta, handleSubmit } = useForm({
-    defaultValues: modalPayload,
-  });
-
   function editWork({ id, ...payload }: any) {
     updateWork({
       data: payload,
-      id: modalPayload.id,
+      id,
     })
       .unwrap()
       .then(() => {
@@ -124,7 +218,7 @@ function EditWorkModal() {
           status: "success",
         });
 
-        updateModal(false);
+        closeModal();
       })
       .catch(() => {
         toast({
@@ -157,63 +251,42 @@ function EditWorkModal() {
   }
 
   return (
-    <Modal size="2xl">
+    <Modal onClose={closeModal} isOpen={isOpen} size="2xl">
       <ModalHeader>
         <Heading size="md">Editar </Heading>
       </ModalHeader>
 
       <ModalBody>
-        <HStack>
-          <ImageFileWithPreview
-            defaultPreviewSrc={modalPayload?.imageUrl}
-            acceptFileTypes={[".png", ".jpg", ".jpeg", "webp"]}
-          />
+        {payload && (
+          <HStack>
+            <ImageFileWithPreview
+              defaultPreviewSrc={payload?.imageUrl || ""}
+              acceptFileTypes={[".png", ".jpg", ".jpeg", "webp"]}
+            />
 
-          <VStack spacing="4" flex="1">
-            <FormControl>
-              <FormLabel>Nome</FormLabel>
-              <Input
-                type="text"
-                value={values.name}
-                onChange={(e) => setFieldValue("name", e.target.value)}
-              />
-            </FormControl>
+            <VStack spacing="4" flex="1">
+              <FormControl>
+                <FormLabel>Nome</FormLabel>
+                <Input type="text" {...register("name")} />
+              </FormControl>
 
-            <FormControl>
-              <FormLabel>Url</FormLabel>
-              <Input
-                type="url"
-                value={values.url}
-                onChange={(e) => setFieldValue("url", e.target.value)}
-              />
-            </FormControl>
+              <FormControl>
+                <FormLabel>Url</FormLabel>
+                <Input type="url" {...register("url")} />
+              </FormControl>
 
-            <FormControl>
-              <FormLabel>Capitulo</FormLabel>
-              <NumberInput
-                value={values?.chapter?.toString()}
-                precision={1}
-                min={0}
-                onChange={(value) => setFieldValue("chapter", Number(value))}
-              >
-                <NumberInputField />
-                <NumberInputStepper>
-                  <NumberIncrementStepper />
-                  <NumberDecrementStepper />
-                </NumberInputStepper>
-              </NumberInput>
-            </FormControl>
-          </VStack>
-        </HStack>
+              <FormControl>
+                <FormLabel>Capitulo</FormLabel>
+                <Input type="number" {...register("chapter")} />
+              </FormControl>
+            </VStack>
+          </HStack>
+        )}
       </ModalBody>
 
       <ModalFooter>
         <ButtonGroup spacing="4">
-          <Button
-            colorScheme="gray"
-            onClick={() => updateModal(false)}
-            disabled={isLoading}
-          >
+          <Button colorScheme="gray" onClick={closeModal} disabled={isLoading}>
             Cancelar
           </Button>
           <Button
@@ -242,6 +315,7 @@ export default function Page() {
   return (
     <>
       <EditWorkModal />
+      <ConfirmFinishWorkModal />
 
       <Box mt="1">
         {isLoading && (

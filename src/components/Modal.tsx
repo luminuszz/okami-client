@@ -5,24 +5,14 @@ import {
   ModalOverlay,
   ModalProps,
 } from "@chakra-ui/react";
-import { useAtom, useAtomValue } from "jotai/react";
-import { modalOpenAtom } from "@/store/modal";
 
-interface Props extends Omit<ModalProps, "isOpen" | "onClose"> {
+interface Props extends ModalProps {
   children: React.ReactNode;
 }
 
 export function Modal({ children, ...props }: Props) {
-  const modalIsIsOpen = useAtomValue(modalOpenAtom);
-
-  const [_, updateModal] = useAtom(modalOpenAtom);
-
-  function handleClose() {
-    updateModal(false);
-  }
-
   return (
-    <ChakraModal {...props} isOpen={modalIsIsOpen} onClose={handleClose}>
+    <ChakraModal {...props}>
       <ModalOverlay />
       <ModalContent>{children}</ModalContent>
     </ChakraModal>

@@ -1,11 +1,10 @@
 "use client";
 
-import { atom, PrimitiveAtom } from "jotai";
-import { useAtom, useAtomValue } from "jotai/react";
+import { atom } from "jotai";
+import { useAtom } from "jotai/react";
 import { atomFamily } from "jotai/utils";
 import { useCallback, useEffect } from "react";
 import { okamiService } from "@/services/okami";
-import { cloneDeep } from "lodash";
 
 interface Endpoint<Data = any> {
   currentData: Data;
@@ -88,7 +87,7 @@ interface UseQueryPayloadOutPut<Result> extends Endpoint<Result> {
   refetch: () => void;
 }
 
-export function useQuerySlice<State>(query: string) {
+export function useQuerySlice<State>(query: string, isLazy = false) {
   const [queryState, updateQuery] = useAtom(querySliceAtom(query));
 
   const executeQuery = useCallback(() => {
@@ -104,8 +103,10 @@ export function useQuerySlice<State>(query: string) {
   }, [query, updateQuery]);
 
   useEffect(() => {
+    if (isLazy) return;
+
     executeQuery();
-  }, [executeQuery]);
+  }, [executeQuery, isLazy]);
 
   return {
     ...queryState,

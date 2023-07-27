@@ -5,6 +5,7 @@ import {
   Button,
   ButtonGroup,
   Container,
+  HStack,
   ModalBody,
   ModalFooter,
   ModalHeader,
@@ -25,25 +26,33 @@ import {
   markWorkAsReadCall,
   Work,
 } from "@/services/okami";
-import { useAtom, useAtomValue } from "jotai/react";
+import { useAtomValue } from "jotai/react";
 import { lowerCaseSearchInputAtom } from "@/store/searchInput";
 import { SearchInput } from "@/components/Search";
 import { filter, map } from "lodash";
 import { Modal } from "@/components/Modal";
-import {
-  markReadModalPayloadAtom,
-  modalOpenAtom,
-  openMarkReadModalAtomAction,
-} from "@/store/modal";
-import React, { useEffect, useState } from "react";
+
+import React, { useState } from "react";
+import { useModal } from "@/store/modal";
+import { RefreshWorksStatusButton } from "@/components/RefreshWorksStatusButton";
+
+interface MarkReadModalPayload {
+  id: string;
+  name: string;
+  chapter: number;
+}
 
 function MarkReadModal() {
   const toast = useToast();
-  const payload = useAtomValue(markReadModalPayloadAtom);
+  const {
+    modal: { payload, isOpen },
+    closeModal,
+  } = useModal<MarkReadModalPayload>("MarkReadModal");
 
-  const [markAsRead, { isLoading }] = useMutationSlice(markWorkAsReadCall);
-
-  const [, updateModal] = useAtom(modalOpenAtom);
+  const [markAsRead, { isLoading }] = useMutationSlice(
+    markWorkAsReadCall,
+    getUnreadWorksQuery,
+  );
 
   const [input, setInput] = useState("");
 
@@ -64,7 +73,7 @@ function MarkReadModal() {
           description: `Capítulo ${value} de ${payload.name} marcado como lido`,
         });
 
-        handleClose();
+        closeModal();
       })
       .catch(() => {
         toast({
@@ -75,17 +84,15 @@ function MarkReadModal() {
       });
   }
 
-  const handleClose = () => updateModal(false);
-
   return (
-    <Modal>
+    <Modal isOpen={isOpen} onClose={closeModal}>
       <ModalHeader>{payload?.name}</ModalHeader>
       <ModalBody>
         <NumberInput
           precision={1}
           defaultValue={payload?.chapter}
-          onChange={(value) => setInput(value)}
-          min={0}
+          onChange={setInput}
+          min={1}
         >
           <NumberInputField />
           <NumberInputStepper>
@@ -99,12 +106,13 @@ function MarkReadModal() {
         <Button
           colorScheme="gray"
           mr={3}
-          onClick={handleClose}
+          onClick={closeModal}
           disabled={isLoading}
         >
           Fechar
         </Button>
         <Button
+          isDisabled={!input}
           variant="solid"
           colorScheme="green"
           onClick={handleMarkRead}
@@ -118,14 +126,11 @@ function MarkReadModal() {
 }
 
 export default function Page() {
-  const {
-    currentData = [],
-    refetch,
-    isLoading,
-  } = useQuerySlice<Work[]>(getUnreadWorksQuery);
-  const searchFilter = useAtomValue(lowerCaseSearchInputAtom);
+  const { openModal } = useModal<MarkReadModalPayload>("MarkReadModal");
 
-  const [, openModal] = useAtom(openMarkReadModalAtomAction);
+  const { currentData = [], isLoading } =
+    useQuerySlice<Work[]>(getUnreadWorksQuery);
+  const searchFilter = useAtomValue(lowerCaseSearchInputAtom);
 
   const workList = filter(
     map(currentData, (work) => ({
@@ -147,16 +152,6 @@ export default function Page() {
     openModal(payload);
   }
 
-  useEffect(() => {
-    document.addEventListener("focus", () => {
-      refetch();
-    });
-
-    return () => {
-      document.removeEventListener("focus", () => console.log("remove"));
-    };
-  }, [refetch]);
-
   return (
     <>
       <Box mt="1">
@@ -169,7 +164,10 @@ export default function Page() {
         <MarkReadModal />
 
         <VStack spacing="5">
-          <SearchInput />
+          <HStack w="full" flex="1" justifyContent="center">
+            <SearchInput />
+            <RefreshWorksStatusButton />
+          </HStack>
 
           <SimpleGrid columns={[1, 2, 3]} spacing={10} pb="5">
             {workList?.map((work) => (

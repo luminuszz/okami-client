@@ -6,6 +6,7 @@ export const okamiService = axios.create({
 
 export const getUnreadWorksQuery = "/work/fetch-for-workers-unread";
 export const getReadWorksQuery = "/work/fetch-for-workers-read";
+export const refreshWorkStatusQuery = "/work/refresh-chapters";
 
 interface MarkWorkAsReadPayload {
   chapter: number;
@@ -49,6 +50,12 @@ export async function uploadWorkImageCall(data: FormData) {
       headers: { "Content-Type": "multipart/form-data" },
     },
   );
+}
+
+export async function markWorkAsFinishedCall(workId: string) {
+  const { data } = await okamiService.patch(`/work/mark-finished/${workId}`);
+
+  return data;
 }
 
 export * from "./types";
