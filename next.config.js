@@ -4,6 +4,16 @@ const nextConfig = {
   images: {
     domains: ["okami-storage.s3.amazonaws.com"],
   },
+
+  redirects: () => {
+    return [
+      {
+        source: "/",
+        destination: "/works/unread",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;
