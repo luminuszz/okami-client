@@ -26,6 +26,9 @@ interface Props {
   children: React.ReactNode;
 }
 
+const defaultCardImage =
+  "https://okami-storage.s3.amazonaws.com/work-images/animes-default.jpg";
+
 export function Card({ data, children }: Props) {
   const theme = useTheme() as any;
 
@@ -35,7 +38,7 @@ export function Card({ data, children }: Props) {
         <Image
           width={300}
           height={100}
-          src={data.img || "/anime-default.jpg"}
+          src={data.img || defaultCardImage}
           alt={data.title}
           style={{
             borderRadius: theme.radii.lg,
