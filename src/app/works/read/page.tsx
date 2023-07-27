@@ -206,7 +206,12 @@ function EditWorkModal() {
 
   const image = useAtomValue(imageFileAtom);
 
-  function editWork({ id, ...payload }: any) {
+  function editWork({ id, ...values }: any) {
+    const payload = {
+      ...values,
+      chapter: Number(values.chapter),
+    };
+
     updateWork({
       data: payload,
       id,

@@ -160,7 +160,7 @@ export function useMutationSlice<Payload, Result>(
       .catch((error) => {
         updateMutation({ error, status: "error" });
 
-        return error;
+        throw error;
       })
       .finally(() => updateMutation({ isLoading: false }));
 
