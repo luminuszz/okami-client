@@ -27,6 +27,7 @@ export interface EditWorkModalPayload {
   name: string;
   chapter: number;
   url: string;
+  imageUrl: string | null;
 }
 
 export const openEditWorkModalAction = atom(

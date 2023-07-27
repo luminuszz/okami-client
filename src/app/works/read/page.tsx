@@ -1,15 +1,22 @@
 "use client";
 
 import { useMutationSlice, useQuerySlice } from "@/store/api";
-import { getReadWorksQuery, updateWorkCall, Work } from "@/services/okami";
+import {
+  getReadWorksQuery,
+  updateWorkCall,
+  uploadWorkImageCall,
+  Work,
+} from "@/services/okami";
 import {
   Box,
   Button,
   ButtonGroup,
   Container,
+  Flex,
   FormControl,
   FormLabel,
   Heading,
+  HStack,
   ModalBody,
   ModalFooter,
   ModalHeader,
@@ -22,6 +29,7 @@ import {
   SimpleGrid,
   useToast,
   VStack,
+  Image,
 } from "@chakra-ui/react";
 import { Card } from "@/components/Card";
 import { filter, map } from "lodash";
@@ -33,6 +41,8 @@ import { Modal } from "@/components/Modal";
 import { Input } from "@chakra-ui/input";
 import { openEditWorkModalAction, updateModalIsOpen } from "@/store/modal";
 import { useForm } from "@/store/form";
+import { ImageFileWithPreview } from "@/components/ImageFileWithPreview";
+import { imageFileAtom } from "@/store/imageFileWithPreview";
 
 interface WorkListProps {
   works: Work[];
@@ -47,6 +57,7 @@ function WorksList({ works }: WorkListProps) {
       url: work.url,
       chapter: work.chapter,
       id: work.id,
+      imageUrl: work.imageUrl,
     });
   }
 
@@ -88,6 +99,13 @@ function EditWorkModal() {
     getReadWorksQuery,
   );
 
+  const image = useAtomValue(imageFileAtom);
+
+  const [uploadWorkImage, { isLoading: isUploadingImage }] = useMutationSlice(
+    uploadWorkImageCall,
+    getReadWorksQuery,
+  );
+
   const [, updateModal] = useAtom(updateModalIsOpen);
 
   const { errors, values, setFieldValue, formMeta, handleSubmit } = useForm({
@@ -114,6 +132,28 @@ function EditWorkModal() {
           status: "error",
         });
       });
+
+    if (image) {
+      const formData = new FormData();
+
+      formData.append("file", image);
+      formData.append("id", id);
+
+      uploadWorkImage(formData)
+        .unwrap()
+        .then(() => {
+          toast({
+            title: "Imagem atualizada com sucesso",
+            status: "success",
+          });
+        })
+        .catch(() => {
+          toast({
+            title: "Erro ao atualizar imagem",
+            status: "error",
+          });
+        });
+    }
   }
 
   return (
@@ -123,41 +163,48 @@ function EditWorkModal() {
       </ModalHeader>
 
       <ModalBody>
-        <VStack spacing="4">
-          <FormControl>
-            <FormLabel>Nome</FormLabel>
-            <Input
-              type="text"
-              value={values.name}
-              onChange={(e) => setFieldValue("name", e.target.value)}
-            />
-          </FormControl>
+        <HStack>
+          <ImageFileWithPreview
+            defaultPreviewSrc={modalPayload?.imageUrl}
+            acceptFileTypes={[".png", ".jpg", ".jpeg", "webp"]}
+          />
 
-          <FormControl>
-            <FormLabel>Url</FormLabel>
-            <Input
-              type="url"
-              value={values.url}
-              onChange={(e) => setFieldValue("url", e.target.value)}
-            />
-          </FormControl>
+          <VStack spacing="4" flex="1">
+            <FormControl>
+              <FormLabel>Nome</FormLabel>
+              <Input
+                type="text"
+                value={values.name}
+                onChange={(e) => setFieldValue("name", e.target.value)}
+              />
+            </FormControl>
 
-          <FormControl>
-            <FormLabel>Capitulo</FormLabel>
-            <NumberInput
-              value={values?.chapter?.toString()}
-              precision={1}
-              min={0}
-              onChange={(value) => setFieldValue("chapter", Number(value))}
-            >
-              <NumberInputField />
-              <NumberInputStepper>
-                <NumberIncrementStepper />
-                <NumberDecrementStepper />
-              </NumberInputStepper>
-            </NumberInput>
-          </FormControl>
-        </VStack>
+            <FormControl>
+              <FormLabel>Url</FormLabel>
+              <Input
+                type="url"
+                value={values.url}
+                onChange={(e) => setFieldValue("url", e.target.value)}
+              />
+            </FormControl>
+
+            <FormControl>
+              <FormLabel>Capitulo</FormLabel>
+              <NumberInput
+                value={values?.chapter?.toString()}
+                precision={1}
+                min={0}
+                onChange={(value) => setFieldValue("chapter", Number(value))}
+              >
+                <NumberInputField />
+                <NumberInputStepper>
+                  <NumberIncrementStepper />
+                  <NumberDecrementStepper />
+                </NumberInputStepper>
+              </NumberInput>
+            </FormControl>
+          </VStack>
+        </HStack>
       </ModalBody>
 
       <ModalFooter>

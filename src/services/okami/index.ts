@@ -1,5 +1,4 @@
 import axios from "axios";
-import { Work } from "@/services/okami/types";
 
 export const okamiService = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
@@ -40,6 +39,16 @@ export async function updateWorkCall({ id, data }: UpdateWorkInput) {
   });
 
   return response.data;
+}
+
+export async function uploadWorkImageCall(data: FormData) {
+  const response = await okamiService.post(
+    `/work/upload-work-image/${data.get("id")}`,
+    data,
+    {
+      headers: { "Content-Type": "multipart/form-data" },
+    },
+  );
 }
 
 export * from "./types";
