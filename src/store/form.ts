@@ -32,7 +32,7 @@ export const formManagerAtom = atom(
 
 export function useForm<Values>({ defaultValues }: UseFormArgs<Values>) {
   const [form, setForm] = useState(defaultValues);
-  const [errors, setErrors] = useAtom(formErrorStateAtom);
+  const [errors, _] = useAtom(formErrorStateAtom);
   const [formMeta, setFormMeta] = useAtom(formMetaStateAtom);
 
   const setFieldValue = useCallback(

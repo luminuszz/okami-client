@@ -50,6 +50,8 @@ export async function uploadWorkImageCall(data: FormData) {
       headers: { "Content-Type": "multipart/form-data" },
     },
   );
+
+  return response.data;
 }
 
 export async function markWorkAsFinishedCall(workId: string) {

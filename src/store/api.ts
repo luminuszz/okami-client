@@ -26,11 +26,6 @@ const defaultQueryState = {
   cache: null,
 };
 
-type QueryPayload = {
-  queryString: string;
-  data: OptionalEndpoint<any>;
-};
-
 type MutationPayload<Payload = any, Result = void> = {
   isLoading: boolean;
   error: any;

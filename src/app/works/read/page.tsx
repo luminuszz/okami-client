@@ -194,7 +194,7 @@ function EditWorkModal() {
     },
   });
 
-  const [uploadWorkImage, { isLoading: isUploadingImage }] = useMutationSlice(
+  const [uploadWorkImage] = useMutationSlice(
     uploadWorkImageCall,
     getReadWorksQuery,
   );
