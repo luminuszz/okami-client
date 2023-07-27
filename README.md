@@ -1,34 +1,50 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+<p align="center">
+  <img src="./images/okami-front-end.png" width="250" alt="Nest Logo" />
+</p>
 
-## Getting Started
 
-First, run the development server:
+
+<p align="center">
+  <strong style="font-size:40px">OKAMI FRONT END</strong>
+</p>
+
+## Description
+
+OKAMI FRONT-END is module for OKAMI consume OKAMI SERVER api rest
+
+## Installation
+
+For for run create a ```.env``` in de project dir
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
+PORT=
+NEXT_PUBLIC_API_URL=
+API_URL=
+DOCKER_FILE_ENV=
+
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+```bash
+$ yarn install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Running the app
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+```bash
+# development
+$ yarn run start
 
-## Learn More
 
-To learn more about Next.js, take a look at the following resources:
+# production mode
+$ docker compose up --build
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Other OKAMI modules
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+- [OKAMI-WORKERS](https://github.com/luminuszz/okami-workers)
+- [OKAMI-FRONT-END](https://github.com/luminuszz/okami-client)
+- [OKAMI-SERVER](https://github.com/luminuszz/okami)
 
-## Deploy on Vercel
+## License
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Nest is [MIT licensed](LICENSE).
