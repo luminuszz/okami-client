@@ -1,20 +1,16 @@
 import {
   Card as ChakraCard,
   CardBody,
-  Stack,
-  Heading,
-  Divider,
-  Button,
-  ButtonGroup,
   CardFooter,
+  Divider,
+  Heading,
+  Stack,
   Text,
 } from "@chakra-ui/react";
-import React, { useEffect } from "react";
+import React from "react";
 
 import Image from "next/image";
 import { useTheme } from "@emotion/react";
-import { useAtom } from "jotai/react";
-import { openMarkReadModalAtomAction } from "@/store/modal";
 
 type Type = "ANIME" | "MANGA";
 
