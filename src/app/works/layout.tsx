@@ -12,7 +12,7 @@ export default function WorkLayout({ children }: WorkLayoutProps) {
   return (
     <Box w="100vw" h="100%">
       {children}
-      <DevTools />
+      {process.env.NODE_ENV === "development" && <DevTools />}
     </Box>
   );
 }
