@@ -27,20 +27,11 @@ interface Props {
     chapter: number;
     url: string;
   };
+  children: React.ReactNode;
 }
 
-export function Card({ data }: Props) {
+export function Card({ data, children }: Props) {
   const theme = useTheme() as any;
-
-  const [, openModal] = useAtom(openMarkReadModalAtomAction);
-
-  function handleMarkRead() {
-    openModal({
-      chapter: data.chapter,
-      id: data.id,
-      name: data.title,
-    });
-  }
 
   return (
     <ChakraCard maxW="sm">
@@ -58,11 +49,11 @@ export function Card({ data }: Props) {
           }}
         />
         <Stack mt="6" spacing="3">
-          <Heading size="md" isTruncated>
+          <Heading size={["xs", "md"]} isTruncated>
             {data.title}
           </Heading>
 
-          <Text color="blue.600" fontSize="xl">
+          <Text color="blue.600" fontSize={["sm", "md"]}>
             {`Ultimo ${data.type === "MANGA" ? "Capitulo:" : "Episodio:"} ${
               data.chapter
             } `}
@@ -70,23 +61,7 @@ export function Card({ data }: Props) {
         </Stack>
       </CardBody>
       <Divider />
-      <CardFooter>
-        <ButtonGroup spacing="2">
-          <Button variant="solid" colorScheme="blue" onClick={handleMarkRead}>
-            Marcar como lido
-          </Button>
-
-          <Button
-            variant="ghost"
-            colorScheme="blue"
-            href={data.url}
-            target="_blank"
-            as={"a"}
-          >
-            Ir para o site
-          </Button>
-        </ButtonGroup>
-      </CardFooter>
+      <CardFooter>{children}</CardFooter>
     </ChakraCard>
   );
 }

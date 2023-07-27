@@ -43,7 +43,7 @@ type MutationPayload<Payload = any, Result = void> = {
 
 export const okamiServerApiCache = atom<Cache>({});
 
-export const querySlice = atomFamily((queryId: string) =>
+export const querySliceAtom = atomFamily((queryId: string) =>
   atom(
     (get) => get(okamiServerApiCache)[queryId] || defaultQueryState,
     (get, set, args: Partial<Endpoint>) => {
@@ -89,7 +89,7 @@ interface UseQueryPayloadOutPut<Result> extends Endpoint<Result> {
 }
 
 export function useQuerySlice<State>(query: string) {
-  const [queryState, updateQuery] = useAtom(querySlice(query));
+  const [queryState, updateQuery] = useAtom(querySliceAtom(query));
 
   const executeQuery = useCallback(() => {
     if (queryState.isLoading) return;
@@ -122,8 +122,29 @@ type UseMutationOutput<Payload, Result> = [
 
 export function useMutationSlice<Payload, Result>(
   mutation: MutationExec<Payload, Result>,
+  invalidateCache: string = "",
 ): UseMutationOutput<Payload, Result> {
   const [mutationState, updateMutation] = useAtom(mutationStateSelectorAtom);
+  const [, setQuerySlice] = useAtom(querySliceAtom(invalidateCache));
+
+  function makeInvalidation(queryString: string) {
+    setQuerySlice({ isLoading: true });
+
+    okamiService
+      .get(queryString)
+      .then(({ data }) => {
+        setQuerySlice({
+          currentData: data,
+          cache: data,
+        });
+      })
+      .catch((error) => {
+        setQuerySlice({
+          error,
+        });
+      })
+      .finally(() => setQuerySlice({ isLoading: false }));
+  }
 
   function mutate(args: Payload) {
     updateMutation({ isLoading: true, status: "pending" });
@@ -135,6 +156,9 @@ export function useMutationSlice<Payload, Result>(
           status: "success",
           error: null,
         });
+
+        if (invalidateCache) makeInvalidation(invalidateCache);
+
         return result;
       })
       .catch((error) => {

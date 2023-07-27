@@ -1,41 +1,46 @@
 "use client";
 
 import {
+  Box,
   Button,
+  ButtonGroup,
   Container,
   ModalBody,
   ModalFooter,
   ModalHeader,
-  SimpleGrid,
-  VStack,
-  NumberInput,
-  NumberInputStepper,
-  NumberIncrementStepper,
   NumberDecrementStepper,
+  NumberIncrementStepper,
+  NumberInput,
   NumberInputField,
-  useToast,
+  NumberInputStepper,
   Progress,
-  Box,
+  SimpleGrid,
+  useToast,
+  VStack,
 } from "@chakra-ui/react";
 import { Card } from "@/components/Card";
-import { useMutationSlice, useQuerySlice } from "@/store/okami";
+import { useMutationSlice, useQuerySlice } from "@/store/api";
 import {
   getUnreadWorksQuery,
   markWorkAsReadCall,
   Work,
 } from "@/services/okami";
 import { useAtom, useAtomValue } from "jotai/react";
-import { lowerCaseSearchInputAtom, searchInputAtom } from "@/store/searchInput";
+import { lowerCaseSearchInputAtom } from "@/store/searchInput";
 import { SearchInput } from "@/components/Search";
 import { filter, map } from "lodash";
 import { Modal } from "@/components/Modal";
-import { Input } from "@chakra-ui/input";
-import { markReadModalPayloadAtom, modalOpenAtom } from "@/store/modal";
-import React, { useCallback, useEffect, useState } from "react";
+import {
+  markReadModalPayloadAtom,
+  modalOpenAtom,
+  openMarkReadModalAtomAction,
+} from "@/store/modal";
+import React, { useEffect, useState } from "react";
 
 function MarkReadModal() {
   const toast = useToast();
   const payload = useAtomValue(markReadModalPayloadAtom);
+
   const [markAsRead, { isLoading }] = useMutationSlice(markWorkAsReadCall);
 
   const [, updateModal] = useAtom(modalOpenAtom);
@@ -120,6 +125,8 @@ export default function Page() {
   } = useQuerySlice<Work[]>(getUnreadWorksQuery);
   const searchFilter = useAtomValue(lowerCaseSearchInputAtom);
 
+  const [, openModal] = useAtom(openMarkReadModalAtomAction);
+
   const workList = filter(
     map(currentData, (work) => ({
       title: work.name,
@@ -131,6 +138,14 @@ export default function Page() {
     })),
     ({ title }) => title.toLowerCase().includes(searchFilter),
   );
+
+  function handleMarkRead(payload: {
+    chapter: number;
+    name: string;
+    id: string;
+  }) {
+    openModal(payload);
+  }
 
   useEffect(() => {
     document.addEventListener("focus", () => {
@@ -150,14 +165,46 @@ export default function Page() {
         )}
       </Box>
 
-      <Container pt="10" maxW="container.xl">
+      <Container pt="10" maxW="full">
         <MarkReadModal />
 
         <VStack spacing="5">
           <SearchInput />
 
-          <SimpleGrid columns={3} spacing={10} pb="5">
-            {workList?.map((work) => <Card key={work.id} data={work as any} />)}
+          <SimpleGrid columns={[1, 2, 3]} spacing={10} pb="5">
+            {workList?.map((work) => (
+              <Card key={work.id} data={work as any}>
+                <ButtonGroup spacing="2">
+                  <Button
+                    fontSize={["sm", "md"]}
+                    size={["sm", "md"]}
+                    variant="solid"
+                    colorScheme="blue"
+                    onClick={() =>
+                      handleMarkRead({
+                        chapter: work.chapter,
+                        name: work.title,
+                        id: work.id,
+                      })
+                    }
+                  >
+                    Marcar
+                  </Button>
+
+                  <Button
+                    variant="ghost"
+                    colorScheme="blue"
+                    href={work.url}
+                    target="_blank"
+                    as={"a"}
+                    fontSize={["sm", "md"]}
+                    size={["sm", "md"]}
+                  >
+                    Ir para o site
+                  </Button>
+                </ButtonGroup>
+              </Card>
+            ))}
           </SimpleGrid>
         </VStack>
       </Container>

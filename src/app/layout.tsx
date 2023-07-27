@@ -3,7 +3,9 @@
 import { Inter } from "next/font/google";
 import { Providers } from "@/app/providers";
 import React from "react";
-import { ColorModeScript, Flex } from "@chakra-ui/react";
+
+import { Navbar } from "@/components/NavBar";
+import { HStack } from "@chakra-ui/react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -15,7 +17,12 @@ export default function RootLayout({
   return (
     <html lang="pt-br">
       <body className={inter.className}>
-        <Providers>{children}</Providers>
+        <Providers>
+          <HStack alignItems="flex-start">
+            <Navbar />
+            {children}
+          </HStack>
+        </Providers>
       </body>
     </html>
   );
