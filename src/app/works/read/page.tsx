@@ -48,6 +48,14 @@ interface ConfirmModalPayload {
   name: string;
 }
 
+interface EditWorkModalPayload {
+  name: string;
+  id: string;
+  chapter: number;
+  imageUrl: string | null;
+  url: string;
+}
+
 function ConfirmFinishWorkModal() {
   const toast = useToast();
   const [markWorkAsFinished, { isLoading }] = useMutationSlice(
@@ -167,14 +175,6 @@ function WorksList({ works }: WorkListProps) {
       ))}
     </SimpleGrid>
   );
-}
-
-interface EditWorkModalPayload {
-  name: string;
-  id: string;
-  chapter: number;
-  imageUrl: string | null;
-  url: string;
 }
 
 function EditWorkModal() {
@@ -315,19 +315,17 @@ export default function Page() {
 
   const works = filter(currentData, ({ name }) =>
     name.toLowerCase().includes(searchFilter),
-  );
+  ).sort((a, b) => (a.isFinished ? 1 : -1));
 
   return (
     <>
       <EditWorkModal />
       <ConfirmFinishWorkModal />
-
       <Box mt="1">
         {isLoading && (
           <Progress w="full" colorScheme="blue" size="xs" isIndeterminate />
         )}
       </Box>
-
       <Container pt="10" maxW="full">
         <VStack spacing={5}>
           <SearchInput />
