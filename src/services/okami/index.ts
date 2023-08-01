@@ -13,10 +13,7 @@ interface MarkWorkAsReadPayload {
   workId: string;
 }
 
-export async function markWorkAsReadCall({
-  workId,
-  chapter,
-}: MarkWorkAsReadPayload) {
+export async function markWorkAsReadCall({ workId, chapter }: MarkWorkAsReadPayload) {
   const response = await okamiService.patch(`/work/${workId}/update-chapater`, {
     chapter,
   });
@@ -26,30 +23,21 @@ export async function markWorkAsReadCall({
 
 interface UpdateWorkInput {
   id: string;
-  data: {
-    name?: string;
-    chapter?: number;
-    url?: string;
-  };
+  name?: string;
+  chapter?: number;
+  url?: string;
 }
 
-export async function updateWorkCall({ id, data }: UpdateWorkInput) {
-  const response = await okamiService.put("/work/update-work", {
-    id,
-    data,
-  });
+export async function updateWorkCall({ id, ...data }: UpdateWorkInput) {
+  const response = await okamiService.put(`/work/update-work/${id}`, data);
 
   return response.data;
 }
 
 export async function uploadWorkImageCall(data: FormData) {
-  const response = await okamiService.post(
-    `/work/upload-work-image/${data.get("id")}`,
-    data,
-    {
-      headers: { "Content-Type": "multipart/form-data" },
-    },
-  );
+  const response = await okamiService.post(`/work/upload-work-image/${data.get("id")}`, data, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
 
   return response.data;
 }

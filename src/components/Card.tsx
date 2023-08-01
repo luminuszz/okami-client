@@ -1,12 +1,4 @@
-import {
-  Card as ChakraCard,
-  CardBody,
-  CardFooter,
-  Divider,
-  Heading,
-  Stack,
-  Text,
-} from "@chakra-ui/react";
+import { Card as ChakraCard, CardBody, CardFooter, Divider, Heading, Stack, Text } from "@chakra-ui/react";
 import React from "react";
 
 import Image from "next/image";
@@ -26,8 +18,7 @@ interface Props {
   children: React.ReactNode;
 }
 
-const defaultCardImage =
-  "https://okami-storage.s3.amazonaws.com/work-images/animes-default.jpg";
+const defaultCardImage = "https://okami-storage.s3.amazonaws.com/work-images/animes-default.jpg";
 
 export function Card({ data, children }: Props) {
   const theme = useTheme() as any;
@@ -36,6 +27,8 @@ export function Card({ data, children }: Props) {
     <ChakraCard maxW="sm">
       <CardBody>
         <Image
+          placeholder="blur"
+          blurDataURL={data.img || defaultCardImage}
           width={300}
           height={100}
           src={data.img || defaultCardImage}
@@ -53,9 +46,7 @@ export function Card({ data, children }: Props) {
           </Heading>
 
           <Text color="blue.600" fontSize={["sm", "md"]}>
-            {`Ultimo ${data.type === "MANGA" ? "Capitulo:" : "Episodio:"} ${
-              data.chapter
-            } `}
+            {`Ultimo ${data.type === "MANGA" ? "Capitulo:" : "Episodio:"} ${data.chapter} `}
           </Text>
         </Stack>
       </CardBody>
