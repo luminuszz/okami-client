@@ -3,7 +3,7 @@
 import { CacheProvider } from "@chakra-ui/next-js";
 import { ChakraProvider } from "@chakra-ui/react";
 import { createStore } from "jotai";
-import { Provider } from "jotai";
+import { Provider } from "jotai/react";
 
 const jotaiStore = createStore();
 

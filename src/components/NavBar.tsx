@@ -1,4 +1,4 @@
-import { Box, Flex, IconButton, Theme, VStack } from "@chakra-ui/react";
+import { Flex, IconButton, Theme, VStack } from "@chakra-ui/react";
 import { Book, BookMarked } from "lucide-react";
 import { Icon as ChakraIcon } from "@chakra-ui/icons";
 import { useTheme } from "@emotion/react";
@@ -27,7 +27,7 @@ export function Navbar() {
       alignItems="flex-start"
       mt="2"
       bgColor="blue.800"
-      w="60px"
+      w="62px"
       h="100%"
       borderRightRadius="lg"
     >
@@ -37,11 +37,7 @@ export function Navbar() {
             onClick={() => push(route)}
             key={name}
             aria-label={name}
-            icon={
-              <ChakraIcon
-                as={() => <Icon size={30} color={theme.colors.gray["300"]} />}
-              />
-            }
+            icon={<ChakraIcon as={() => <Icon size={30} color={theme.colors.gray["300"]} />} />}
             size="lg"
             variant="ghost"
           />
