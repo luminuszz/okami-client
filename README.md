@@ -37,6 +37,10 @@ $ yarn run start
 
 # production mode
 $ docker compose up --build
+
+
+
+
 ```
 
 ## Other OKAMI modules
