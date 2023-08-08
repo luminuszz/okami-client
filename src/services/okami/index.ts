@@ -4,6 +4,28 @@ export const okamiService = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
 });
 
+okamiService.interceptors.request.use((request) => {
+  const token = localStorage.getItem("token");
+
+  if (token) {
+    request.headers.Authorization = `Bearer ${token}`;
+  }
+
+  return request;
+});
+
+okamiService.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response.status === 401) {
+      localStorage.removeItem("token");
+      window.location.href = "/login";
+    }
+
+    return Promise.reject(error);
+  },
+);
+
 export const getUnreadWorksQuery = "/work/fetch-for-workers-unread";
 export const getReadWorksQuery = "/work/fetch-for-workers-read";
 export const refreshWorkStatusQuery = "/work/refresh-chapters";
@@ -28,6 +50,11 @@ interface UpdateWorkInput {
   url?: string;
 }
 
+interface MakeLoginInput {
+  email: string;
+  password: string;
+}
+
 export async function updateWorkCall({ id, ...data }: UpdateWorkInput) {
   const response = await okamiService.put(`/work/update-work/${id}`, data);
 
@@ -46,6 +73,12 @@ export async function markWorkAsFinishedCall(workId: string) {
   const { data } = await okamiService.patch(`/work/mark-finished/${workId}`);
 
   return data;
+}
+
+export async function makeLoginCall(data: MakeLoginInput) {
+  const response = await okamiService.post("/auth/login", data);
+
+  return response.data;
 }
 
 export * from "./types";
