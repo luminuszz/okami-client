@@ -29,6 +29,7 @@ okamiService.interceptors.response.use(
 export const getUnreadWorksQuery = "/work/fetch-for-workers-unread";
 export const getReadWorksQuery = "/work/fetch-for-workers-read";
 export const refreshWorkStatusQuery = "/work/refresh-chapters";
+export const getCurrentUserQuery = "/auth/user/me";
 
 interface MarkWorkAsReadPayload {
   chapter: number;

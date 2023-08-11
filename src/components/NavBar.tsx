@@ -3,6 +3,7 @@ import { Book, BookMarked } from "lucide-react";
 import { Icon as ChakraIcon } from "@chakra-ui/icons";
 import { useTheme } from "@emotion/react";
 import { useRouter } from "next/navigation";
+import { UserAvatar } from "@/components/UserAvatar";
 
 const navBarSections = [
   {
@@ -32,6 +33,8 @@ export function Navbar() {
       borderRightRadius="lg"
     >
       <VStack spacing={5} p="2">
+        <UserAvatar />
+
         {navBarSections.map(({ name, icon: Icon, route }) => (
           <IconButton
             onClick={() => push(route)}
