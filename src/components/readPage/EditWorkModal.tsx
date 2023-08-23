@@ -23,6 +23,7 @@ import { Input } from "@chakra-ui/input";
 import React from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import ImageCompressor from "compressorjs";
 
 export interface EditWorkModalPayload {
   name: string;
@@ -104,25 +105,32 @@ export function EditWorkModal() {
       });
 
     if (image) {
-      const formData = new FormData();
+      new ImageCompressor(image, {
+        convertSize: 100000,
+        resize: "cover",
+        quality: 0.8,
+        success: (file) => {
+          const formData = new FormData();
 
-      formData.append("file", image);
-      formData.append("id", payload.id);
+          formData.append("file", file);
+          formData.append("id", payload.id);
 
-      uploadWorkImage(formData)
-        .unwrap()
-        .then(() => {
-          toast({
-            title: "Imagem atualizada com sucesso",
-            status: "success",
-          });
-        })
-        .catch(() => {
-          toast({
-            title: "Erro ao atualizar imagem",
-            status: "error",
-          });
-        });
+          uploadWorkImage(formData)
+            .unwrap()
+            .then(() => {
+              toast({
+                title: "Imagem atualizada com sucesso",
+                status: "success",
+              });
+            })
+            .catch(() => {
+              toast({
+                title: "Erro ao atualizar imagem",
+                status: "error",
+              });
+            });
+        },
+      });
     }
   }
 
