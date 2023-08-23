@@ -2,7 +2,9 @@ import { atom } from "jotai";
 
 export const imageFileAtom = atom<File | null>(null);
 
-export const imagePreviewAtom = atom("/image-preview-default.png");
+export const imagePreviewAtom = atom(
+  "https://okami-storage.s3.amazonaws.com/work-images/image-preview-default.png",
+);
 
 export const imageCreatedByFileOrDefaultPreviewAtom = atom(
   (get) => {
