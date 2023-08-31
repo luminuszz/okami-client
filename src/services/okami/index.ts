@@ -37,7 +37,7 @@ interface MarkWorkAsReadPayload {
 }
 
 export async function markWorkAsReadCall({ workId, chapter }: MarkWorkAsReadPayload) {
-  const response = await okamiService.patch(`/work/${workId}/update-chapater`, {
+  const response = await okamiService.patch(`/work/${workId}/update-chapter`, {
     chapter,
   });
 
