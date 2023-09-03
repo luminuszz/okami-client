@@ -1,7 +1,6 @@
-import { FormLabel, Image, useToast } from "@chakra-ui/react";
-import { Input } from "@chakra-ui/input";
+import { FormLabel, Image, Input, useToast } from "@chakra-ui/react";
 import React, { useEffect } from "react";
-import { useAtom, useAtomValue } from "jotai/react";
+import { useAtom } from "jotai/react";
 import {
   imageCreatedByFileOrDefaultPreviewAtom,
   imageFileAtom,
@@ -13,10 +12,7 @@ interface Props {
   defaultPreviewSrc?: string;
 }
 
-export function ImageFileWithPreview({
-  acceptFileTypes,
-  defaultPreviewSrc,
-}: Props) {
+export function ImageFileWithPreview({ acceptFileTypes, defaultPreviewSrc }: Props) {
   const toast = useToast();
 
   const [, setImage] = useAtom(imageFileAtom);
@@ -39,9 +35,7 @@ export function ImageFileWithPreview({
 
         toast({
           title: "Tipos de imagem inválido",
-          description: `Os tipos de imagem aceitos são: ${acceptFileTypes.join(
-            `, `,
-          )}`,
+          description: `Os tipos de imagem aceitos são: ${acceptFileTypes.join(`, `)}`,
           status: "error",
         });
       }

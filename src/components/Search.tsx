@@ -1,7 +1,6 @@
-import { Input } from "@chakra-ui/input";
 import { useAtom } from "jotai/react";
 import { searchInputAtom } from "@/store/searchInput";
-import { Flex } from "@chakra-ui/react";
+import { Flex, Input } from "@chakra-ui/react";
 
 export function SearchInput() {
   const [search, setSearch] = useAtom(searchInputAtom);

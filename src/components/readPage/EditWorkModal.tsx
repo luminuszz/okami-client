@@ -5,6 +5,7 @@ import {
   FormLabel,
   Heading,
   HStack,
+  Input,
   ModalBody,
   ModalFooter,
   ModalHeader,
@@ -19,7 +20,6 @@ import { useAtomValue } from "jotai/react";
 import { imageFileAtom } from "@/store/imageFileWithPreview";
 import { Modal } from "@/components/Modal";
 import { ImageFileWithPreview } from "@/components/ImageFileWithPreview";
-import { Input } from "@chakra-ui/input";
 import React from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
