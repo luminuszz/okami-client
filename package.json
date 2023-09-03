@@ -14,7 +14,7 @@
     "@chakra-ui/react": "^2.8.0",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
-    "@hookform/resolvers": "^3.1.1",
+    "@hookform/resolvers": "^3.3.1",
     "@types/node": "20.4.4",
     "@types/react": "18.2.16",
     "@types/react-dom": "18.2.7",
@@ -35,7 +35,8 @@
     "react-dom": "18.2.0",
     "react-hook-form": "^7.45.2",
     "typescript": "5.1.6",
-    "yarn": "^1.22.19"
+    "yarn": "^1.22.19",
+    "zod": "^3.22.2"
   },
   "devDependencies": {
     "@types/axios": "^0.14.0",

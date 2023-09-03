@@ -76,7 +76,7 @@ export function EditWorkModal() {
       chapter: payload?.chapter,
       url: payload?.url,
     },
-    resolver: zodResolver(schema),
+    resolver: zodResolver(schema as any),
   });
 
   const image = useAtomValue(imageFileAtom);

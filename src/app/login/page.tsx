@@ -40,7 +40,7 @@ export default function LoginPage() {
       password: "",
     },
     reValidateMode: "onBlur",
-    resolver: zodResolver(schema),
+    resolver: zodResolver(schema as any),
   });
 
   function handleLogin(payload: FormType) {

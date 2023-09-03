@@ -35,7 +35,7 @@ interface Props {
 const defaultCardImage = "https://okami-storage.s3.amazonaws.com/work-images/animes-default.jpg";
 
 export function Card({ data, children }: Props) {
-  const { colors } = useTheme();
+  const { colors } = useTheme() as any;
 
   const theme = useTheme() as any;
 
