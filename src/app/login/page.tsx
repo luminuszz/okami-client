@@ -6,10 +6,11 @@ import {
   FormControl,
   FormErrorMessage,
   FormLabel,
+  Input,
   useToast,
   VStack,
 } from "@chakra-ui/react";
-import { Input } from "@chakra-ui/input";
+
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
