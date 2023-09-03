@@ -7,4 +7,7 @@ export interface Work {
   isFinished: boolean;
   imageId: string | null;
   imageUrl: string | null;
+  nextChapterUpdatedAt: string | null;
+  nextChapter: number | null;
+  category: string;
 }

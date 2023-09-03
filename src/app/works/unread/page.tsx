@@ -21,11 +21,7 @@ import {
 } from "@chakra-ui/react";
 import { Card } from "@/components/Card";
 import { useMutationSlice, useQuerySlice } from "@/store/api";
-import {
-  getUnreadWorksQuery,
-  markWorkAsReadCall,
-  Work,
-} from "@/services/okami";
+import { getUnreadWorksQuery, markWorkAsReadCall, Work } from "@/services/okami";
 import { useAtomValue } from "jotai/react";
 import { lowerCaseSearchInputAtom } from "@/store/searchInput";
 import { SearchInput } from "@/components/Search";
@@ -49,10 +45,7 @@ function MarkReadModal() {
     closeModal,
   } = useModal<MarkReadModalPayload>("MarkReadModal");
 
-  const [markAsRead, { isLoading }] = useMutationSlice(
-    markWorkAsReadCall,
-    getUnreadWorksQuery,
-  );
+  const [markAsRead, { isLoading }] = useMutationSlice(markWorkAsReadCall, getUnreadWorksQuery);
 
   const [input, setInput] = useState("");
 
@@ -88,12 +81,7 @@ function MarkReadModal() {
     <Modal isOpen={isOpen} onClose={closeModal}>
       <ModalHeader>{payload?.name}</ModalHeader>
       <ModalBody>
-        <NumberInput
-          precision={1}
-          defaultValue={payload?.chapter}
-          onChange={setInput}
-          min={1}
-        >
+        <NumberInput precision={1} defaultValue={payload?.chapter} onChange={setInput} min={1}>
           <NumberInputField />
           <NumberInputStepper>
             <NumberIncrementStepper />
@@ -103,12 +91,7 @@ function MarkReadModal() {
       </ModalBody>
 
       <ModalFooter>
-        <Button
-          colorScheme="gray"
-          mr={3}
-          onClick={closeModal}
-          disabled={isLoading}
-        >
+        <Button colorScheme="gray" mr={3} onClick={closeModal} disabled={isLoading}>
           Fechar
         </Button>
         <Button
@@ -128,36 +111,31 @@ function MarkReadModal() {
 export default function Page() {
   const { openModal } = useModal<MarkReadModalPayload>("MarkReadModal");
 
-  const { currentData = [], isLoading } =
-    useQuerySlice<Work[]>(getUnreadWorksQuery);
+  const { currentData = [], isLoading } = useQuerySlice<Work[]>(getUnreadWorksQuery);
   const searchFilter = useAtomValue(lowerCaseSearchInputAtom);
 
   const workList = filter(
     map(currentData, (work) => ({
       title: work.name,
       id: work.id,
-      type: "MANGA",
+      type: work.category,
+      nextChapterUpdatedAt: work.nextChapterUpdatedAt,
       img: work.imageUrl || "",
       chapter: work.chapter,
       url: work.url,
+      nextChapter: work.nextChapter,
     })),
     ({ title }) => title.toLowerCase().includes(searchFilter),
   );
 
-  function handleMarkRead(payload: {
-    chapter: number;
-    name: string;
-    id: string;
-  }) {
+  function handleMarkRead(payload: { chapter: number; name: string; id: string }) {
     openModal(payload);
   }
 
   return (
     <>
       <Box mt="1">
-        {isLoading && (
-          <Progress w="full" colorScheme="blue" size="xs" isIndeterminate />
-        )}
+        {isLoading && <Progress w="full" colorScheme="blue" size="xs" isIndeterminate />}
       </Box>
 
       <Container pt="10" maxW="full">

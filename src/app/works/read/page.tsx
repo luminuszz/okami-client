@@ -2,7 +2,15 @@
 
 import { useQuerySlice } from "@/store/api";
 import { getReadWorksQuery, Work } from "@/services/okami";
-import { Box, Button, ButtonGroup, Container, Progress, SimpleGrid, VStack } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  Container,
+  Progress,
+  SimpleGrid,
+  VStack,
+} from "@chakra-ui/react";
 import { Card } from "@/components/Card";
 import { filter, map } from "lodash";
 import React from "react";
@@ -11,7 +19,10 @@ import { useAtomValue } from "jotai/react";
 import { lowerCaseSearchInputAtom } from "@/store/searchInput";
 import { useModal } from "@/store/modal";
 import { EditWorkModal, EditWorkModalPayload } from "@/components/readPage/EditWorkModal";
-import { ConfirmFinishWorkModal, ConfirmModalPayload } from "@/components/readPage/ConfirmFinishModal";
+import {
+  ConfirmFinishWorkModal,
+  ConfirmModalPayload,
+} from "@/components/readPage/ConfirmFinishModal";
 
 interface WorkListProps {
   works: Work[];
@@ -45,10 +56,12 @@ function WorksList({ works }: WorkListProps) {
           data={{
             title: work.name,
             id: work.id,
-            type: "MANGA",
+            type: work.category as any,
             img: work.imageUrl || "",
             url: work.url,
             chapter: work.chapter,
+            nextChapter: work.nextChapter,
+            nextChapterUpdatedAt: work.nextChapterUpdatedAt || "",
           }}
         >
           <ButtonGroup spacing="2" fontSize={["sm", "md"]} size={["sm", "md"]}>
@@ -76,15 +89,17 @@ export default function Page() {
 
   const searchFilter = useAtomValue(lowerCaseSearchInputAtom);
 
-  const works = filter(currentData, ({ name }) => name.toLowerCase().includes(searchFilter)).sort((a) =>
-    a.isFinished ? 1 : -1,
+  const works = filter(currentData, ({ name }) => name.toLowerCase().includes(searchFilter)).sort(
+    (a) => (a.isFinished ? 1 : -1),
   );
 
   return (
     <>
       <EditWorkModal />
       <ConfirmFinishWorkModal />
-      <Box mt="1">{isLoading && <Progress w="full" colorScheme="blue" size="xs" isIndeterminate />}</Box>
+      <Box mt="1">
+        {isLoading && <Progress w="full" colorScheme="blue" size="xs" isIndeterminate />}
+      </Box>
       <Container pt="10" maxW="full">
         <VStack spacing={5}>
           <SearchInput />

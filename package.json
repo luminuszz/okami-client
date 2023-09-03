@@ -21,6 +21,8 @@
     "add": "^2.0.6",
     "axios": "^1.4.0",
     "compressorjs": "^1.2.1",
+    "date-fns": "^2.30.0",
+    "date-fns-tz": "^2.0.0",
     "eslint": "^8.45.0",
     "eslint-config-next": "13.4.12",
     "framer-motion": "^10.13.1",
@@ -37,6 +39,7 @@
   },
   "devDependencies": {
     "@types/axios": "^0.14.0",
+    "@types/date-fns": "^2.6.0",
     "@types/lodash": "^4.14.195",
     "eslint-config-prettier": "^8.8.0",
     "prettier": "^3.0.0"
