@@ -73,14 +73,14 @@ export function Card({ data, children }: Props) {
             <HStack>
               <Book size={16} color={colors.green[400]} />
               <Text fontWeight="600" color="green.400" fontSize={["sm", "md"]}>
-                {`Novo ${data.type === "MANGA" ? "Capitulo:" : "Episodio:"} ${data.chapter} `}
+                {`Novo ${data.type === "MANGA" ? "Capitulo:" : "Episódio:"} ${data.nextChapter} `}
               </Text>
             </HStack>
           ) : (
             <HStack>
               <Book size={16} color={colors.blue[500]} />
               <Text fontWeight="600" color="blue.400" fontSize={["sm", "md"]}>
-                {`Ultimo ${data.type === "MANGA" ? "Capitulo:" : "Episodio:"} ${data.chapter} `}
+                {`Ultimo ${data.type === "MANGA" ? "Capitulo:" : "Episódio:"} ${data.chapter} `}
               </Text>
             </HStack>
           )}
